@@ -4,6 +4,9 @@ module.exports = {
     path: __dirname,
     filename: 'bundle.js'
   },
+  devServer:{
+    historyApiFallback: true,
+  },
   devtool: 'eval-source-map',
   module: {
     loaders: [
@@ -15,7 +18,12 @@ module.exports = {
           presets: ['es2015', 'react'],
           plugins: ['transform-object-rest-spread']
         }
-      }
+      }, 
+      {
+        
+        loader: 'style-loader?modules&importLoaders&localIdentName=[name]__[local]___[hash:base64:5]',
+        test: /\.css$/
+    }
     ]
   }
 };

@@ -1,33 +1,44 @@
+import 'babel-regenerator-runtime';
+import reducer from './reducers';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import reducer from './reducers';
-
-import App from './components/app';
-
+import { createStore, applyMiddleware } from 'redux';
 import { searchSuccess } from './actions/search';
+import App from './components/app/app.container';
+import { createLogger } from 'redux-logger';
+import searchSaga from './sagas/search';
+import createSagaMiddleware  from 'redux-saga';
+import { Router, Route} from 'react-router';
+import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
+import  createBrowserHistory from 'history/createBrowserHistory';
+import SearchPage from './components/pages/search/search'; 
+import TrendingPage from './components/pages/trending/trending'; 
+import RandomPage from './components/pages/random/random'; 
 
+
+const sagas = createSagaMiddleware();
+const history = createBrowserHistory();
 const store = createStore(
-    reducer
-);
+    reducer,
+    applyMiddleware (
+        routerMiddleware(history),
+        createLogger(), 
+        sagas
+    )
+    );
 
-const results = [
-    {
-        full: 'https://media3.giphy.com/media/g5KhmX06Q0XBu/giphy.gif',
-        thumbnail: 'https://media3.giphy.com/media/g5KhmX06Q0XBu/100_s.gif',
-    },
-    {
-        full: 'https://media2.giphy.com/media/uw3fTCTNMbXAk/giphy.gif',
-        thumbnail: 'https://media2.giphy.com/media/uw3fTCTNMbXAk/100_s.gif',
-    },
-];
+    sagas.run(searchSaga);
 
-window.setTimeout(() => {
-    store.dispatch(searchSuccess(results))
-}, 2000);
-
-ReactDOM.render(
-    <Provider store={store}><App /></Provider>,
+ReactDOM.render (
+    <Provider store={store}>
+    <ConnectedRouter history={history}>
+        <App>
+            <Route exact path="/" component={SearchPage} />
+            <Route exact path="/trending" component={TrendingPage} />
+            <Route exact path="/random" component={RandomPage} />
+        </App>
+    </ConnectedRouter>
+    </Provider>,
     document.getElementById('app')
-);
+); 

@@ -1,0 +1,17 @@
+.container {
+    margin-right:30px;
+    padding: 10px;
+}
+
+.selected {
+    background-color: #999999;
+}
+
+.link {
+    color:  #9ab87a;
+}
+
+.link:hover {
+
+    color: #708B75;
+}
